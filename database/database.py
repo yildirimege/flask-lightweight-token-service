@@ -2,17 +2,18 @@ import psycopg2
 from settings import Settings
 from .Queries import Queries
 from datetime import datetime
+
 settings = Settings()
 
 
 class Database:
 
     def __init__(self):
-        self.host = settings.postgreSqlHost
-        self.port = settings.postgresqlConnectionPort
-        self.databaseName = settings.postgresqlDatabaseName
-        self.user = settings.postgresqlUsername
-        self.password = settings.postgreSqlPassword
+        self.host = settings.postgresql_host
+        self.port = settings.postgresql_connection_port
+        self.databaseName = settings.postgresql_database_name
+        self.user = settings.postgresql_username
+        self.password = settings.postgresql_password
 
         try:
             self.connection = psycopg2.connect(
@@ -23,11 +24,8 @@ class Database:
                 password=self.password
             )
 
-
             self.cursor = self.connection.cursor()
             print("Connected to Database!.")  # TODO: Change this to debugger!
-
-
 
         except psycopg2.Error as e:
             print(f"Error connecting to DB: {e}")  # TODO: Change this to debugger!
@@ -41,7 +39,6 @@ class Database:
         '''
         self.cursor.execute(create_table_query)
         self.connection.commit()
-
 
     def connect(self):
         try:
@@ -72,7 +69,7 @@ class Database:
         else:
             print("Error while disconnecting from DB.")  # TODO: Change this to debugger!
 
-    def list_tokens(self): #TODO: This is for DEBUG purposes only. remove in release.
+    def list_tokens(self):  # TODO: This is for DEBUG purposes only. remove in release.
         select_query = """
                     SELECT * FROM token_table
                 """
@@ -89,7 +86,7 @@ class Database:
     def store_token(self, token_uuid):
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         insert_token_query = "INSERT INTO token_table (token, expiration_time) VALUES (%s, %s);"
-        self.cursor.execute(insert_token_query, (token_uuid, current_time ))
+        self.cursor.execute(insert_token_query, (token_uuid, current_time))
         self.connection.commit()
 
     def get_token_timestamp(self, token_uuid: str):
