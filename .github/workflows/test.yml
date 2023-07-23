@@ -9,6 +9,16 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Start Docker containers and Check Their Status
+      run: |
+        docker-compose up --build -d
+        if docker-compose ps | grep -E "flask-lightweight-token-service_app_1.*Up" && docker-compose ps | grep -E "flask-lightweight-token-service_postgres_db_1.*Up"; then
+          echo "Containers are running"
+        else
+          echo "Containers are not running"
+          exit 1
+        fi
+
     - name: Set up Python
       uses: actions/setup-python@v2
       with:

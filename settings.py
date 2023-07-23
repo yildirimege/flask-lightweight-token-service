@@ -5,7 +5,7 @@ from dataclasses import dataclass
 @dataclass
 class Settings:
     def __init__(self,
-                 postgresqlHost: str = "postgres_db", #TODO: CHANGE THIS TO postgres_db (Service name in docker-compose)
+                 postgresqlHost: str = "postgres_db",
                  postgresqlDatabaseName: str = "postgres",
                  postgresqlUsername: str = "yildirimege",
                  postgresqlPassword: str = "123456",
