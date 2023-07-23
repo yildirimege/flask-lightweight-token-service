@@ -16,7 +16,7 @@ jobs:
     # Add a step to check if the containers are running
     - name: Check Docker containers
       run: |
-        if docker ps --filter "name=flask-identity-provider" --filter "name=postgres_db" --format "{{.Names}}" | grep -wq "flask-identity-provider" && docker ps --filter "name=postgres_db" --format "{{.Names}}" | grep -wq "postgres_db"; then
+        if docker-compose ps | grep -E "flask-lightweight-token-service-app-1.*Up" && docker-compose ps | grep -E "flask-lightweight-token-service-postgres_db-1.*Up"; then
           echo "Containers are running"
         else
           echo "Containers are not running"
