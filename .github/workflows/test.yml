@@ -3,22 +3,23 @@ name: Unit Tests
 on: [push]
 
 jobs:
-  test:
+  start_containers:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Start Docker containers and Check Their Status
-      run: |
-        docker-compose up --build -d
-        if docker-compose ps | grep -E "flask-lightweight-token-service_app_1.*Up" && docker-compose ps | grep -E "flask-lightweight-token-service_postgres_db_1.*Up"; then
-          echo "Containers are running"
-        else
-          echo "Containers are not running"
-          exit 1
-        fi
+    - name: Set up Docker Compose
+      run: sudo apt-get update && sudo apt-get install -y docker-compose
 
+    - name: Start Docker containers
+      run: docker-compose up --build -d
+
+  check_containers:
+    runs-on: ubuntu-latest
+    needs: start_containers
+
+    steps:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
@@ -27,5 +28,19 @@ jobs:
     - name: Install dependencies
       run: pip install -r requirements.txt
 
+    - name: Check Docker containers
+      run: |
+        if docker-compose ps | grep -E "flask-lightweight-token-service_app_1.*Up" && docker-compose ps | grep -E "flask-lightweight-token-service-postgres_db_1.*Up"; then
+          echo "Containers are running"
+        else
+          echo "Containers are not running"
+          exit 1
+        fi
+
+  run_tests:
+    runs-on: ubuntu-latest
+    needs: check_containers
+
+    steps:
     - name: Run unit tests
       run: python -m unittest discover -s unit_tests -p 'TokenAuthTests.py'
