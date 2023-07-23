@@ -11,10 +11,9 @@ COPY controller.py controller.py
 COPY router.py router.py
 COPY settings.py settings.py
 
-#TODO: Add constants such as PostgreSQL Credentials etc. here.
-
 ENV LOG_LEVEL="DEBUG"
 
+#TODO: Get variables below as arguments in docker-compose.
 ENV POSTGRESQL_CONN_PORT="5432"
 ENV POSTGRESQL_DB_NAME="postgres"
 ENV POSTGRESQL_TABLE_NAME="flask_identity_provider"

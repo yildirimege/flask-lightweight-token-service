@@ -7,6 +7,7 @@ from database.database import Database
 from flask import request
 
 from datetime import datetime, timedelta
+from utils.utils import get_token_uuid_from_header
 
 logger = logging.getLogger(__name__)
 logger.setLevel(os.getenv('LOG_LEVEL', 'DEBUG'))  # DEBUG by default.
@@ -20,16 +21,12 @@ class Controller:
         self.database = database
 
     def verify_token(self, received_request: request) -> bool:  # TODO: Refactor this.
-        authorization_header = received_request.headers.get('Authorization')
+        token_uuid = get_token_uuid_from_header(received_request=received_request)
+        token_timestamp = self.database.get_token_timestamp(token_uuid=token_uuid)
 
-        if authorization_header and authorization_header.startswith('Bearer '):
-            token_uuid = authorization_header.split(' ')[1]
-            token_timestamp = self.database.get_token_timestamp(token_uuid=token_uuid)
+        time_difference = datetime.now() - token_timestamp
 
-            current_time = datetime.now()
-            time_difference = current_time - token_timestamp
-
-            return time_difference <= timedelta(seconds=60)
+        return time_difference <= timedelta(seconds=60)
 
     def store_token(self, token_uuid):
         self.database.store_token(token_uuid=token_uuid)

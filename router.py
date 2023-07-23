@@ -34,6 +34,7 @@ class Router:
                 print(f"Token UUID: {g.token_uuid}")
                 controller.store_token(g.token_uuid)
             return res
+
         @server.route("/", methods=['GET', 'POST'])  # Index
         @time_logger
         def index():
@@ -45,7 +46,7 @@ class Router:
             g.token_uuid = controller.generate_token()
             return {"token": g.token_uuid}
 
-        @server.route('/list_tokens', methods=['POST']) # Debug purposes only. Remove the endpoint in release
+        @server.route('/list_tokens', methods=['POST'])  # Debug purposes only. Remove the endpoint in release
         @time_logger
         def list_tokens():
             tokens = database.list_tokens()
@@ -55,7 +56,6 @@ class Router:
         @time_logger
         def verify_token():
             return {"Received token": controller.verify_token(request)}
-
 
         @server.errorhandler(Exception)
         def handle_identity_provider_exception(e):
@@ -70,6 +70,7 @@ class Router:
                 })
                 response.content_type = "application/json"
                 return response
+
 
 Router(flask_app)
 if __name__ == '__main__':

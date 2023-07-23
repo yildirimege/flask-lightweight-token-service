@@ -14,7 +14,7 @@ class TokenAuthorizationTests(unittest.TestCase):
         self.client = self.app.test_client()
 
     def test_valid_token(self):
-        '''with patch('controller.verify_token') as mock_verify_token:
+        """with patch('controller.verify_token') as mock_verify_token:
             mock_verify_token.return_value = True
 
             expiry_time = datetime.utcnow() + timedelta(hours=1)
@@ -26,10 +26,11 @@ class TokenAuthorizationTests(unittest.TestCase):
 
             #self.assertEqual(response.status_code, 200)
             expected_response = {'authorization_result': True}
-            #self.assertEqual(json.loads(response.get_data(as_text=True)), expected_response)'''
+            #self.assertEqual(json.loads(response.get_data(as_text=True)), expected_response)"""
         self.assertTrue(True)
+
     def test_invalid_token(self):
-        '''with patch('controller.verify_token') as mock_verify_token:
+        """with patch('controller.verify_token') as mock_verify_token:
             mock_verify_token.return_value = False
 
             expiry_time = datetime.utcnow() + timedelta(hours=1)
@@ -41,11 +42,11 @@ class TokenAuthorizationTests(unittest.TestCase):
 
             #self.assertEqual(response.status_code, 200)
             expected_response = {'authorization_result': True}
-            #self.assertEqual(json.loads(response.get_data(as_text=True)), expected_response)'''
+            #self.assertEqual(json.loads(response.get_data(as_text=True)), expected_response)"""
         self.assertTrue(True)
 
     def test_expired_token(self):
-        '''with patch('controller.verify_token') as mock_verify_token:
+        """with patch('controller.verify_token') as mock_verify_token:
             mock_verify_token.return_value = False
 
             expiry_time = datetime.utcfromtimestamp(0) + timedelta(hours=1)
@@ -57,8 +58,9 @@ class TokenAuthorizationTests(unittest.TestCase):
 
             #self.assertEqual(response.status_code, 200)
             expected_response = {'authorization_result': True}
-            #self.assertEqual(json.loads(response.get_data(as_text=True)), expected_response)'''
+            #self.assertEqual(json.loads(response.get_data(as_text=True)), expected_response)"""
         self.assertTrue(True)
+
 
 if __name__ == '__main__':
     unittest.main()
