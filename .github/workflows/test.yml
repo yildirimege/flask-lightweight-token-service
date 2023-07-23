@@ -9,6 +9,20 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    # Add a step to start the containers
+    - name: Start Docker containers
+      run: docker-compose up --build -d
+
+    # Add a step to check if the containers are running
+    - name: Check Docker containers
+      run: |
+        if docker ps --filter "name=flask-identity-provider" --filter "name=postgres_db" --format "{{.Names}}" | grep -wq "flask-identity-provider" && docker ps --filter "name=postgres_db" --format "{{.Names}}" | grep -wq "postgres_db"; then
+          echo "Containers are running"
+        else
+          echo "Containers are not running"
+          exit 1
+        fi
+
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
