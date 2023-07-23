@@ -12,7 +12,7 @@ jobs:
     - name: Start Docker containers and Check Their Status
       run: |
         docker-compose up --build -d
-        if docker-compose ps | grep -E "flask-lightweight-token-service-app-1.*Up" && docker-compose ps | grep -E "flask-lightweight-token-service-postgres_db-1.*Up"; then
+        if docker-compose ps | grep -E "flask-lightweight-token-service_app_1.*Up" && docker-compose ps | grep -E "flask-lightweight-token-service_postgres_db_1.*Up"; then
           echo "Containers are running"
         else
           echo "Containers are not running"
