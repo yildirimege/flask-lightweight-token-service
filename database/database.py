@@ -31,6 +31,9 @@ class Database:
             print(f"Error connecting to DB: {e}")  # TODO: Change this to debugger!
 
     def init_tokens_table(self):
+        """
+        Initialize the 'token_table' in the database if it doesn't exist.
+        """
         create_table_query = '''
         CREATE TABLE IF NOT EXISTS token_table (
             token UUID DEFAULT gen_random_uuid() NOT NULL UNIQUE, 
@@ -41,6 +44,9 @@ class Database:
         self.connection.commit()
 
     def connect(self):
+        """
+                Connect to the PostgreSQL database and create the 'token_table' if it doesn't exist.
+                """
         try:
             self.connection = psycopg2.connect(
                 host=self.host,
@@ -62,26 +68,15 @@ class Database:
             print(f"Error connecting to DB: {e}")  # TODO: Change this to debugger!
 
     def disconnect(self):
+        """
+        Disconnects from PostgreSQL Database
+        """
         if self.connection:
             self.cursor.close()
             self.connection.close()
             print("Disconnected from DB.")  # TODO: Change this to debugger!
         else:
             print("Error while disconnecting from DB.")  # TODO: Change this to debugger!
-
-    def list_tokens(self):  # TODO: This is for DEBUG purposes only. remove in release.
-        select_query = """
-                    SELECT * FROM token_table
-                """
-
-        # Execute the query
-        self.cursor.execute(select_query)
-
-        # Fetch all rows from the result set
-        rows = self.cursor.fetchall()
-
-        # Print the rows
-        return rows
 
     def store_token(self, token_uuid):
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
