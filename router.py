@@ -55,7 +55,7 @@ class Router:
         @server.route("/verify_token", methods=["GET"])
         @time_logger
         def verify_token():
-            return {"Received token": controller.verify_token(request)}
+            return {"valid": controller.verify_token(request)}
 
         @server.errorhandler(Exception)
         def handle_identity_provider_exception(e):
