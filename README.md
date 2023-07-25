@@ -49,3 +49,12 @@ docker-compose up --build -d
   {"valid": true}
   ```
 
+## TO-DO List
+- Implement an autodeploy bash script to deploy the Flask Token Provider to a remote machine automatically.
+- Implement IP Blacklist & Whitelist to restrict or allow specific IP addresses from accessing the endpoints.
+- Add api-level tests besides of function level tests for the Flask application to ensure the functionality is working as expected.
+- Implement rate limiting to prevent abuse and ensure fair usage of the endpoints.
+- Enhance the logging mechanism to provide more detailed information about the application's behavior.
+
+Feel free to contribute to the project and help improve its functionality and security. If you have any suggestions or feature requests, please open an issue or submit a pull request.
+
