@@ -2,6 +2,9 @@ version : '3'
 
 services:
   app:
+    build:
+      dockerfile: Dockerfile_app
+
     environment:
       POSTGRESQL_USERNAME: ${POSTGRESQL_USERNAME}
       POSTGRESQL_PASSWORD: ${POSTGRESQL_PASSWORD}
@@ -12,8 +15,6 @@ services:
       TOKEN_CLEAR_FREQUENCY: ${TOKEN_CLEAR_FREQUENCY}
       POSTGRESQL_SSL_MODE: ${POSTGRESQL_SSL_MODE}
 
-    build:
-      dockerfile: Dockerfile_app
     ports:
       - ${BACKEND_APP_PORT}:${BACKEND_APP_PORT}
     depends_on:
