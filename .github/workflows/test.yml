@@ -25,6 +25,9 @@ jobs:
     - name: Set up Docker Compose
       run: sudo apt-get update && sudo apt-get install -y docker-compose
 
+    - name: Validate Docker Compose Configuration
+      run: docker-compose config
+
     - name: Start Docker containers and Check Their Status
       run: |
         docker-compose up --build -d
