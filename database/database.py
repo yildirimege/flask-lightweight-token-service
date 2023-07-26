@@ -78,17 +78,25 @@ class Database:
         else:
             print("Error while disconnecting from DB.")  # TODO: Change this to debugger!
 
-    def store_token(self, token_uuid):
-        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    def store_token(self, token_uuid, expiry_time):
         insert_token_query = "INSERT INTO token_table (token, expiration_time) VALUES (%s, %s);"
-        self.cursor.execute(insert_token_query, (token_uuid, current_time))
+        self.cursor.execute(insert_token_query, (token_uuid, expiry_time))
         self.connection.commit()
 
-    def get_token_timestamp(self, token_uuid: str):
+    def check_if_token_exists(self, token_uuid: str):
+        """
+        Check if the token exists in the database.
+
+        Parameters:
+            - token_uuid (str): The UUID of the token to be checked.
+
+        Returns:
+            - bool: True if the token exists, False otherwise.
+        """
         select_query = """
-                    SELECT expiration_time FROM token_table WHERE token = %s
+                   SELECT 1 FROM token_table WHERE token = %s
                        """
         self.cursor.execute(select_query, (token_uuid,))
 
-        row = self.cursor.fetchone()[0]
-        return row if row else "0"
+        row = self.cursor.fetchone()
+        return row is not None

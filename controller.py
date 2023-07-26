@@ -54,8 +54,7 @@ class Controller:
 
         # If the endpoint doesn't require any specific validation, return True
         return True
-
-    def verify_token(self, received_request: request) -> bool:  # TODO: Refactor this.
+    def verify_token(self, received_request: request) -> bool:
         """
         Verify the validity of the provided token.
 
@@ -66,11 +65,7 @@ class Controller:
             - bool: True if the token is valid and not expired, False otherwise.
         """
         token_uuid = get_token_uuid_from_header(received_request=received_request)
-        token_timestamp = self.database.get_token_timestamp(token_uuid=token_uuid)
-
-        time_difference = datetime.now() - token_timestamp
-
-        return time_difference <= timedelta(seconds=60)
+        return self.database.check_if_token_exists(token_uuid=token_uuid)
 
     def store_token(self, token_uuid):
         """
@@ -79,10 +74,13 @@ class Controller:
         Parameters:
             - token_uuid (str): The UUID of the token to be stored.
         """
-        self.database.store_token(token_uuid=token_uuid)
-        logger.debug(
-            f"Token with UUID '{token_uuid}' stored in the database at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.")
+        expiry_time = datetime.now() + timedelta(minutes=1)
 
+        # Store the token and its expiry time in the database
+        self.database.store_token(token_uuid=token_uuid, expiry_time=expiry_time)
+
+        logger.debug(
+            f"Token with UUID '{token_uuid}' stored in the database at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}. Expiry time: {expiry_time.strftime('%Y-%m-%d %H:%M:%S')}")
     def generate_token(self):
         """
         Generate a new token.

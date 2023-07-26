@@ -1,0 +1,20 @@
+# Use the official Python image as base image
+FROM python:3.11
+
+# Set the working directory in the container to /app
+WORKDIR /app
+
+# Copy the requirements.txt file into the container at /app
+COPY requirements.txt .
+COPY settings.py .
+
+ENV TOKEN_CLEAR_FREQUENCY 300 #In seconds.
+
+# Install the required dependencies specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the token_clearer.py script into the container at /app
+COPY token_clearer.py .
+
+# Run the token_clearer.py script
+CMD ["python", "token_clearer.py"]
