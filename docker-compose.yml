@@ -1,7 +1,8 @@
 version : '3'
 services:
   app:
-    build: .
+    build:
+      dockerfile: Dockerfile_app
     ports:
       - "8080:8080"
     environment:
@@ -23,6 +24,18 @@ services:
       - db_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+
+  token_clearer:
+    environment:
+      - TOKEN_CLEAR_FREQUENCY=1800
+    build:
+      context: .
+      dockerfile: Dockerfile_token_clearer
+    depends_on:
+      - postgres_db
+    volumes:
+      - ./utils:/app/utils
+    command: ["python", "token_clearer.py"]  # Run the token_clearer.py script
 
 volumes:
   db_data:
