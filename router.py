@@ -56,7 +56,7 @@ class Router:
             if hasattr(g, 'token_uuid') and request.path == "/generate_token":
                 controller.store_token(g.token_uuid)
             else:
-                pass
+                pass #TODO: Custom error message or remove else.
             return res
 
         @server.route("/", methods=['GET', 'POST'])  # Index

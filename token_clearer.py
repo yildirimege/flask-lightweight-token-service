@@ -4,6 +4,7 @@ import logging
 from datetime import datetime, timedelta
 from settings import Settings
 import time
+
 settings = Settings()
 
 # Configure logging
@@ -16,6 +17,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 token_clear_frequency = int(os.environ.get('TOKEN_CLEAR_FREQUENCY', 300))
+
 
 class TokenClearer:
 
@@ -62,13 +64,8 @@ class TokenClearer:
 if __name__ == '__main__':
     clearer = TokenClearer()
     while True:
-        try:
-            # Clear expired tokens from the database
-            clearer.clear_expired_tokens()
+        # Clear expired tokens from the database
+        clearer.clear_expired_tokens()
 
-            # Wait for the specified frequency
-            time.sleep(token_clear_frequency)
-        except KeyboardInterrupt:
-            clearer.disconnect()
-            # Allow the script to be terminated with Ctrl+C
-            break
+        # Wait for the specified frequency
+        time.sleep(token_clear_frequency)

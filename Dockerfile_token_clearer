@@ -4,14 +4,15 @@ FROM python:3.11
 # Set the working directory in the container to /app
 WORKDIR /app
 
-# Copy the requirements.txt file into the container at /app
+# Copy the requirements.txt file into the container at /app and install
 COPY requirements.txt .
+RUN pip install -r requirements.txt
+
 COPY settings.py .
 
 ENV TOKEN_CLEAR_FREQUENCY 300 #In seconds.
 
-# Install the required dependencies specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+
 
 # Copy the token_clearer.py script into the container at /app
 COPY token_clearer.py .

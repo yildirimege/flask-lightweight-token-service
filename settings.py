@@ -5,20 +5,15 @@ from dataclasses import dataclass
 
 @dataclass
 class Settings:
-    def __init__(self,
-                 postgresql_host: str = "postgres_db",
-                 postgresql_database_name: str = "postgres",
-                 postgresql_username: str = "yildirimege",
-                 postgresql_password: str = "123456",
-                 postgresql_ssl_mode: str = "require",
-                 postgresql_connection_port: str = "5432"
-                 ):
-        self.postgresql_host = postgresql_host or os.environ["POSTGRESQL_HOST"]
-        self.postgresql_database_name = postgresql_database_name or os.environ["DATABASE_NAME"]
-        self.postgresql_username = postgresql_username or os.environ["POSTGRESQL_USERNAME"]
-        self.postgresql_password = postgresql_password or os.environ["POSTGRESQL_PASSWORD"]
-        self.postgresql_ssl_mode = postgresql_ssl_mode or os.environ["DB_SSL_MODE"]
-        self.postgresql_connection_port = postgresql_connection_port or os.environ["DATABASE_CONN_PORT"]
+    def __init__(self):
+        self.postgresql_username = os.environ["POSTGRESQL_USERNAME"]
+        self.postgresql_password = os.environ["POSTGRESQL_PASSWORD"]
+        self.postgresql_database_name = os.environ["POSTGRESQL_DB_NAME"]
+        self.postgresql_host = os.environ["POSTGRESQL_HOST"]
+        self.postgresql_connection_port = os.environ["POSTGRESQL_DB_PORT"]
+        self.token_expiration_time: int = int(os.environ["TOKEN_EXPIRATION_TIME"])
+        self.token_clearer_frequency: int = int(os.environ["TOKEN_CLEAR_FREQUENCY"])
+        self.postgresql_ssl_mode = os.environ["POSTGRESQL_SSL_MODE"]
 
     def log_config(self, log_level: str):
         logging.basicConfig(
