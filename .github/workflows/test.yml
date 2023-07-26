@@ -3,7 +3,7 @@ name: Tests
 on: [push]
 
 jobs:
-  set_environment_variables:
+  set_environment_variables_and_start_containers:
     runs-on: ubuntu-latest
 
     steps:
@@ -33,18 +33,11 @@ jobs:
         echo "LOG_LEVEL=$LOG_LEVEL" >> $GITHUB_ENV
         echo "POSTGRESQL_SSL_MODE=$POSTGRESQL_SSL_MODE" >> $GITHUB_ENV
         echo "BACKEND_APP_PORT=$BACKEND_APP_PORT" >> $GITHUB_ENV
-
-  start_and_check_containers:
-    needs: set_environment_variables
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
+        
 
     - name: Set up Docker Compose
       run: sudo apt-get update && sudo apt-get install -y docker-compose
 
-    # Add a step to start the containers and check their status
     - name: Start Docker containers and Check Their Status
       run: |
         docker-compose up --build -d
