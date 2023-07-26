@@ -32,7 +32,7 @@ jobs:
       run: |
         docker-compose up --build -d
         if docker-compose ps | grep -E "flask-lightweight-token-service_app_1.*Up" && docker-compose ps | grep -E "flask-lightweight-token-service_postgres_db_1.*Up"
-        | docker-compose ps | grep -E "flask-lightweight-token-service_token_clearer-1.*Up"; then
+        && docker-compose ps | grep -E "flask-lightweight-token-service_token_clearer-1.*Up"; then
           echo "Containers are running"
         else
           echo "Containers are not running"
