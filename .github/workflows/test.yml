@@ -1,9 +1,41 @@
-name: Unit Tests
+name: Tests
 
 on: [push]
 
 jobs:
+  set_environment_variables:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Parse config.xml and set environment variables
+      run: |
+        # Parse the config.xml file and set the environmental variables
+        POSTGRESQL_USERNAME=$(grep -oPm1 "(?<=<POSTGRESQL_USERNAME>).*?(?=</POSTGRESQL_USERNAME>)" config.xml)
+        POSTGRESQL_PASSWORD=$(grep -oPm1 "(?<=<POSTGRESQL_PASSWORD>).*?(?=</POSTGRESQL_PASSWORD>)" config.xml)
+        POSTGRESQL_DB_NAME=$(grep -oPm1 "(?<=<POSTGRESQL_DB_NAME>).*?(?=</POSTGRESQL_DB_NAME>)" config.xml)
+        POSTGRESQL_HOST=$(grep -oPm1 "(?<=<POSTGRESQL_HOST>).*?(?=</POSTGRESQL_HOST>)" config.xml)
+        POSTGRESQL_DB_PORT=$(grep -oPm1 "(?<=<POSTGRESQL_DB_PORT>).*?(?=</POSTGRESQL_DB_PORT>)" config.xml)
+        TOKEN_EXPIRATION_TIME=$(grep -oPm1 "(?<=<TOKEN_EXPIRATION_TIME>).*?(?=</TOKEN_EXPIRATION_TIME>)" config.xml)
+        TOKEN_CLEAR_FREQUENCY=$(grep -oPm1 "(?<=<TOKEN_CLEAR_FREQUENCY>).*?(?=</TOKEN_CLEAR_FREQUENCY>)" config.xml)
+        LOG_LEVEL=$(grep -oPm1 "(?<=<LOG_LEVEL>).*?(?=</LOG_LEVEL>)" config.xml)
+        POSTGRESQL_SSL_MODE=$(grep -oPm1 "(?<=<POSTGRESQL_SSL_MODE>).*?(?=</POSTGRESQL_SSL_MODE>)" config.xml)
+        BACKEND_APP_PORT=$(grep -oPm1 "(?<=<BACKEND_APP_PORT>).*?(?=</BACKEND_APP_PORT>)" config.xml)
+        
+        echo "POSTGRESQL_USERNAME=$POSTGRESQL_USERNAME" >> $GITHUB_ENV
+        echo "POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD" >> $GITHUB_ENV
+        echo "POSTGRESQL_DB_NAME=$POSTGRESQL_DB_NAME" >> $GITHUB_ENV
+        echo "POSTGRESQL_HOST=$POSTGRESQL_HOST" >> $GITHUB_ENV
+        echo "POSTGRESQL_DB_PORT=$POSTGRESQL_DB_PORT" >> $GITHUB_ENV
+        echo "TOKEN_EXPIRATION_TIME=$TOKEN_EXPIRATION_TIME" >> $GITHUB_ENV
+        echo "TOKEN_CLEAR_FREQUENCY=$TOKEN_CLEAR_FREQUENCY" >> $GITHUB_ENV
+        echo "LOG_LEVEL=$LOG_LEVEL" >> $GITHUB_ENV
+        echo "POSTGRESQL_SSL_MODE=$POSTGRESQL_SSL_MODE" >> $GITHUB_ENV
+        echo "BACKEND_APP_PORT=$BACKEND_APP_PORT" >> $GITHUB_ENV
+
   start_and_check_containers:
+    needs: set_environment_variables
     runs-on: ubuntu-latest
 
     steps:
@@ -15,7 +47,7 @@ jobs:
     # Add a step to start the containers and check their status
     - name: Start Docker containers and Check Their Status
       run: |
-        bash start.sh
+        docker-compose up --build -d
         if docker-compose ps | grep -E "flask-lightweight-token-service_app_1.*Up" && docker-compose ps | grep -E "flask-lightweight-token-service_postgres_db_1.*Up"
         || docker-compose ps | grep -E "flask-lightweight-token-service_token_clearer-1.*Up"; then
           echo "Containers are running"
