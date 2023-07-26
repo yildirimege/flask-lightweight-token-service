@@ -12,7 +12,7 @@ COPY router.py router.py
 COPY settings.py settings.py
 
 ENV LOG_LEVEL="DEBUG"
-
+ENV TOKEN_EXPIRATION_TIME=60
 #TODO: Get variables below as arguments in docker-compose.
 ENV POSTGRESQL_CONN_PORT="5432"
 ENV POSTGRESQL_DB_NAME="postgres"

@@ -1,33 +1,51 @@
 version : '3'
+
 services:
   app:
+    environment:
+      POSTGRESQL_USERNAME: ${POSTGRESQL_USERNAME}
+      POSTGRESQL_PASSWORD: ${POSTGRESQL_PASSWORD}
+      POSTGRESQL_DB_NAME: ${POSTGRESQL_DB_NAME}
+      POSTGRESQL_HOST: ${POSTGRESQL_HOST}
+      POSTGRESQL_DB_PORT: ${POSTGRESQL_DB_PORT}
+      TOKEN_EXPIRATION_TIME: ${TOKEN_EXPIRATION_TIME}
+      TOKEN_CLEAR_FREQUENCY: ${TOKEN_CLEAR_FREQUENCY}
+      POSTGRESQL_SSL_MODE: ${POSTGRESQL_SSL_MODE}
+
     build:
       dockerfile: Dockerfile_app
     ports:
-      - "8080:8080"
-    environment:
-      DB_USER: "yildirimege" #${DB_USER}
-      DB_PASSWORD: "123456" #${DB_PASSWORD}
-      DB_NAME: "postgres" #${DB_NAME}
-      DB_HOST: "127.0.0.1" #${DB_HOST}
-      DB_PORT: "5432" #${DB_PORT}
+      - ${BACKEND_APP_PORT}:${BACKEND_APP_PORT}
     depends_on:
       - postgres_db
 
   postgres_db:
-    image: postgres:13
     environment:
-      POSTGRES_USER: "yildirimege" #${POSTGRES_USER}
-      POSTGRES_PASSWORD: "123456" #${POSTGRES_PASSWORD}
-      POSTGRES_DB: "postgres" #${POSTGRES_DB}
+      POSTGRESQL_USERNAME: ${POSTGRESQL_USERNAME}
+      POSTGRESQL_PASSWORD: ${POSTGRESQL_PASSWORD}
+      POSTGRESQL_DB_NAME: ${POSTGRESQL_DB_NAME}
+      POSTGRESQL_HOST: ${POSTGRESQL_HOST}
+      POSTGRESQL_DB_PORT: ${POSTGRESQL_DB_PORT}
+      TOKEN_EXPIRATION_TIME: ${TOKEN_EXPIRATION_TIME}
+      TOKEN_CLEAR_FREQUENCY: ${TOKEN_CLEAR_FREQUENCY}
+      POSTGRESQL_SSL_MODE: ${POSTGRESQL_SSL_MODE}
+
+    image: postgres:13
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      -  ${POSTGRESQL_DB_PORT}:${POSTGRESQL_DB_PORT}
 
   token_clearer:
     environment:
-      - TOKEN_CLEAR_FREQUENCY=1800
+      POSTGRESQL_USERNAME: ${POSTGRESQL_USERNAME}
+      POSTGRESQL_PASSWORD: ${POSTGRESQL_PASSWORD}
+      POSTGRESQL_DB_NAME: ${POSTGRESQL_DB_NAME}
+      POSTGRESQL_HOST: ${POSTGRESQL_HOST}
+      POSTGRESQL_DB_PORT: ${POSTGRESQL_DB_PORT}
+      TOKEN_EXPIRATION_TIME: ${TOKEN_EXPIRATION_TIME}
+      TOKEN_CLEAR_FREQUENCY: ${TOKEN_CLEAR_FREQUENCY}
+      POSTGRESQL_SSL_MODE: ${POSTGRESQL_SSL_MODE}
     build:
       context: .
       dockerfile: Dockerfile_token_clearer

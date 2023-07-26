@@ -83,20 +83,21 @@ class Database:
         self.cursor.execute(insert_token_query, (token_uuid, expiry_time))
         self.connection.commit()
 
-    def check_if_token_exists(self, token_uuid: str):
+    def get_token_expiration_time(self, token_uuid: str):
         """
-        Check if the token exists in the database.
+        Get the expiration timestamp of the given token from the database.
 
         Parameters:
-            - token_uuid (str): The UUID of the token to be checked.
+            - token_uuid (str): The UUID of the token.
 
         Returns:
-            - bool: True if the token exists, False otherwise.
+            - str: The expiration timestamp of the token in the format 'YYYY-MM-DD HH:MM:SS',
+                   or None if the token is not found.
         """
         select_query = """
-                   SELECT 1 FROM token_table WHERE token = %s
+            SELECT expiration_time FROM token_table WHERE token = %s;
                        """
         self.cursor.execute(select_query, (token_uuid,))
 
         row = self.cursor.fetchone()
-        return row is not None
+        return row[0] if row else None

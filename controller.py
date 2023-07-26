@@ -33,27 +33,27 @@ class Controller:
         """
 
         if endpoint == 'verify_token':
-            if endpoint == 'verify_token':
-                # Check if the request has Authorization header
-                if 'Authorization' not in received_request.headers:
-                    return False
+            # Check if the request has Authorization header
+            if 'Authorization' not in received_request.headers:
+                return False
 
-                # Check if the Authorization header follows the schema "Bearer xxx"
-                auth_header = received_request.headers['Authorization']
-                if not auth_header.startswith('Bearer '):
-                    return False
+            # Check if the Authorization header follows the schema "Bearer xxx"
+            auth_header = received_request.headers['Authorization']
+            if not auth_header.startswith('Bearer '):
+                return False #TODO: Return custom messages.
 
-                # Check if the UUID part after "Bearer " is a valid UUID
-                token_uuid = auth_header.split('Bearer ')[1]
-                try:
-                    uuid.UUID(token_uuid)
-                except ValueError:
-                    return False
+            # Check if the UUID part after "Bearer " is a valid UUID
+            token_uuid = auth_header.split('Bearer ')[1]
+            try:
+                uuid.UUID(token_uuid)
+            except ValueError:
+                return False
 
         # Add more conditions for other endpoints as needed
 
         # If the endpoint doesn't require any specific validation, return True
         return True
+
     def verify_token(self, received_request: request) -> bool:
         """
         Verify the validity of the provided token.
@@ -65,7 +65,14 @@ class Controller:
             - bool: True if the token is valid and not expired, False otherwise.
         """
         token_uuid = get_token_uuid_from_header(received_request=received_request)
-        return self.database.check_if_token_exists(token_uuid=token_uuid)
+        token_expiration_time = self.database.get_token_expiration_time(token_uuid=token_uuid)
+
+        if not token_expiration_time:
+            return False
+
+        current_time = datetime.now()
+
+        return current_time <= token_expiration_time + timedelta(seconds=self.settings.token_expiration_time)
 
     def store_token(self, token_uuid):
         """
@@ -74,13 +81,14 @@ class Controller:
         Parameters:
             - token_uuid (str): The UUID of the token to be stored.
         """
-        expiry_time = datetime.now() + timedelta(minutes=1)
+        expiry_time = datetime.now() + timedelta(seconds=int(self.settings.token_clearer_frequency))
 
         # Store the token and its expiry time in the database
         self.database.store_token(token_uuid=token_uuid, expiry_time=expiry_time)
 
         logger.debug(
             f"Token with UUID '{token_uuid}' stored in the database at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}. Expiry time: {expiry_time.strftime('%Y-%m-%d %H:%M:%S')}")
+
     def generate_token(self):
         """
         Generate a new token.
