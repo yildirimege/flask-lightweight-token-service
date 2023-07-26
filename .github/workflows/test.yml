@@ -32,17 +32,20 @@ jobs:
       run: |
         docker-compose up --build -d
 
-        if docker-compose ps | grep -q "flask-lightweight-token-service_app_1.*Up"; then
-          echo "flask-lightweight-token-service_app_1 is running"
-        else
-          echo "flask-lightweight-token-service_app_1 is not running"
-          exit 1
-        fi
-
+        docker-compose ps
+        
+        
         if docker-compose ps | grep -q "flask-lightweight-token-service_postgres_db_1.*Up"; then
           echo "flask-lightweight-token-service_postgres_db_1 is running"
         else
           echo "flask-lightweight-token-service_postgres_db_1 is not running"
+          exit 1
+        fi
+        
+        if docker-compose ps | grep -q "flask-lightweight-token-service_app_1.*Up"; then
+          echo "flask-lightweight-token-service_app_1 is running"
+        else
+          echo "flask-lightweight-token-service_app_1 is not running"
           exit 1
         fi
 
