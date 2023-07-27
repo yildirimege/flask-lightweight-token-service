@@ -4,18 +4,38 @@
 The Flask Token Provider is a lightweight Flask application that provides two endpoints for generating and validating tokens. This project is designed to offer a simple and secure way to generate tokens with specified expiration times and verify their validity.
 
 ## Requirements
-To run this project, you need to have Docker installed on your system.
+- Docker
+- Docker Compose
 
 ## How to Start the Project
 1. Clone the repository to your local machine.
-2. In the root directory of the project, run the following command to start the containers using Docker Compose:
-
+2. This project contains a "config.xml" file, modify the config file with your preferred variables.
+3. Build and start the containers by executing the start.sh bash script.
 
  ```bash
-docker-compose up --build -d
+bash start.sh
 ```
+4. Verify containers are running
+ ```bash
+docker-compose ps
+```
+   
+## Configuration Variables
 
-3. The project uses PostgreSQL as the database. Make sure to provide the required PostgreSQL credentials as environment variables in the `docker-compose.yml` file.
+The `config.xml` file contains the following environmental variables used in the Flask Lightweight Token Service:
+
+- `POSTGRESQL_USERNAME`: The username for the PostgreSQL database.
+- `POSTGRESQL_PASSWORD`: The password for the PostgreSQL database.
+- `POSTGRESQL_DB_NAME`: The name of the PostgreSQL database.
+- `POSTGRESQL_HOST`: The hostname or IP address of the PostgreSQL database. (this must be same with service name of postgresql image in docker-compose or bridge ip of docker.
+- `POSTGRESQL_DB_PORT`: The port number for the PostgreSQL database.
+- `TOKEN_EXPIRATION_TIME`: The time, in seconds, until the generated token expires.
+- `TOKEN_CLEAR_FREQUENCY`: The frequency, in seconds, for the token clearer job to run and remove expired tokens from the database.
+- `LOG_LEVEL`: The logging level for the Flask app (e.g., DEBUG, INFO, WARNING, ERROR).
+- `POSTGRESQL_SSL_MODE`: The SSL mode for the PostgreSQL connection (e.g., require, verify-ca, verify-full).
+- `BACKEND_APP_PORT`: The port number on which the Flask app runs.
+
+Make sure to set these variables with appropriate values to configure the Flask Lightweight Token Service according to your needs.
 
 ## Endpoints
 1. **Generate Token**
