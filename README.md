@@ -70,11 +70,19 @@ Make sure to set these variables with appropriate values to configure the Flask 
   ```
 
 ## TO-DO List
+- Store token hashes instead of UUIDs
+- Enforce secure communication using TLS/SSL
+- Implement optional one time use mechanism.
+- Use HTTPS
+- Sanitize and validate user inputs to prevent SQL Injection.
 - Implement an autodeploy bash script to deploy the Flask Token Provider to a remote machine automatically.
 - Implement IP Blacklist & Whitelist to restrict or allow specific IP addresses from accessing the endpoints.
 - Add api-level tests besides of function level tests for the Flask application to ensure the functionality is working as expected.
 - Implement rate limiting to prevent abuse and ensure fair usage of the endpoints.
 - Enhance the logging mechanism to provide more detailed information about the application's behavior.
+- Stress testings, make sure gunicorn is sufficient
+- Proxying
+- Create log files and log security events there.
 
 Feel free to contribute to the project and help improve its functionality and security. If you have any suggestions or feature requests, please open an issue or submit a pull request.
 
