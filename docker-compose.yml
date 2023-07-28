@@ -30,6 +30,7 @@ services:
       TOKEN_EXPIRATION_TIME: ${TOKEN_EXPIRATION_TIME}
       TOKEN_CLEAR_FREQUENCY: ${TOKEN_CLEAR_FREQUENCY}
       POSTGRESQL_SSL_MODE: ${POSTGRESQL_SSL_MODE}
+      BACKEND_APP_PORT: ${BACKEND_APP_PORT}
     build:
       dockerfile: Dockerfile_app
       context: .
