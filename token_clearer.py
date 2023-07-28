@@ -53,6 +53,19 @@ class TokenClearer:
         else:
             logger.error("Error while disconnecting from DB.")
 
+    def init_tokens_table(self):
+        """
+        Initialize the 'token_table' in the database if it doesn't exist.
+        """
+        create_table_query = '''
+        CREATE TABLE IF NOT EXISTS token_table (
+            token UUID DEFAULT gen_random_uuid() NOT NULL UNIQUE, 
+        expiration_time TIMESTAMP NOT NULL
+        );
+        '''
+        self.cursor.execute(create_table_query)
+        self.connection.commit()
+
     def clear_expired_tokens(self):
         current_time = datetime.now()
         delete_query = "DELETE FROM token_table WHERE expiration_time < %s;"
@@ -63,6 +76,7 @@ class TokenClearer:
 
 if __name__ == '__main__':
     clearer = TokenClearer()
+    clearer.init_tokens_table()
     while True:
         # Clear expired tokens from the database
         clearer.clear_expired_tokens()
