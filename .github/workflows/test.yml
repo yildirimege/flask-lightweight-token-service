@@ -1,6 +1,19 @@
-name: Tests
+name: Build & Unit Tests
 
 on: [push]
+
+env:
+  POSTGRESQL_USERNAME: yildirimege
+  POSTGRESQL_PASSWORD: 123456
+  POSTGRESQL_DB_NAME: POSTGRES
+  POSTGRESQL_HOST: LOCALHOST
+  POSTGRESQL_DB_PORT: 5432
+  TOKEN_EXPIRATION_TIME: 60
+  TOKEN_CLEAR_FREQUENCY: 60
+  LOG_LEVEL: DEBUG
+  POSTGRESQL_SSL_MODE: require
+  BACKEND_APP_PORT: 8080
+
 
 jobs:
   set_environment_variables_and_start_containers:
@@ -9,49 +22,48 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Parse config.xml and set environment variables
-      run: |
-        # Parse the config.xml file and set the environmental variables
-        POSTGRESQL_USERNAME=$(grep -oPm1 "(?<=<POSTGRESQL_USERNAME>).*?(?=</POSTGRESQL_USERNAME>)" config.xml)
-        POSTGRESQL_PASSWORD=$(grep -oPm1 "(?<=<POSTGRESQL_PASSWORD>).*?(?=</POSTGRESQL_PASSWORD>)" config.xml)
-        POSTGRESQL_DB_NAME=$(grep -oPm1 "(?<=<POSTGRESQL_DB_NAME>).*?(?=</POSTGRESQL_DB_NAME>)" config.xml)
-        POSTGRESQL_HOST=$(grep -oPm1 "(?<=<POSTGRESQL_HOST>).*?(?=</POSTGRESQL_HOST>)" config.xml)
-        POSTGRESQL_DB_PORT=$(grep -oPm1 "(?<=<POSTGRESQL_DB_PORT>).*?(?=</POSTGRESQL_DB_PORT>)" config.xml)
-        TOKEN_EXPIRATION_TIME=$(grep -oPm1 "(?<=<TOKEN_EXPIRATION_TIME>).*?(?=</TOKEN_EXPIRATION_TIME>)" config.xml)
-        TOKEN_CLEAR_FREQUENCY=$(grep -oPm1 "(?<=<TOKEN_CLEAR_FREQUENCY>).*?(?=</TOKEN_CLEAR_FREQUENCY>)" config.xml)
-        LOG_LEVEL=$(grep -oPm1 "(?<=<LOG_LEVEL>).*?(?=</LOG_LEVEL>)" config.xml)
-        POSTGRESQL_SSL_MODE=$(grep -oPm1 "(?<=<POSTGRESQL_SSL_MODE>).*?(?=</POSTGRESQL_SSL_MODE>)" config.xml)
-        BACKEND_APP_PORT=$(grep -oPm1 "(?<=<BACKEND_APP_PORT>).*?(?=</BACKEND_APP_PORT>)" config.xml)
-        
-        echo "POSTGRESQL_USERNAME=$POSTGRESQL_USERNAME" >> $GITHUB_ENV
-        echo "POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD" >> $GITHUB_ENV
-        echo "POSTGRESQL_DB_NAME=$POSTGRESQL_DB_NAME" >> $GITHUB_ENV
-        echo "POSTGRESQL_HOST=$POSTGRESQL_HOST" >> $GITHUB_ENV
-        echo "POSTGRESQL_DB_PORT=$POSTGRESQL_DB_PORT" >> $GITHUB_ENV
-        echo "TOKEN_EXPIRATION_TIME=$TOKEN_EXPIRATION_TIME" >> $GITHUB_ENV
-        echo "TOKEN_CLEAR_FREQUENCY=$TOKEN_CLEAR_FREQUENCY" >> $GITHUB_ENV
-        echo "LOG_LEVEL=$LOG_LEVEL" >> $GITHUB_ENV
-        echo "POSTGRESQL_SSL_MODE=$POSTGRESQL_SSL_MODE" >> $GITHUB_ENV
-        echo "BACKEND_APP_PORT=$BACKEND_APP_PORT" >> $GITHUB_ENV
-        
-
     - name: Set up Docker Compose
       run: sudo apt-get update && sudo apt-get install -y docker-compose
+
+    - name: Validate Docker Compose Configuration
+      run: docker-compose config
 
     - name: Start Docker containers and Check Their Status
       run: |
         docker-compose up --build -d
-        if docker-compose ps | grep -E "flask-lightweight-token-service_app_1.*Up" && docker-compose ps | grep -E "flask-lightweight-token-service_postgres_db_1.*Up"
-        || docker-compose ps | grep -E "flask-lightweight-token-service_token_clearer-1.*Up"; then
-          echo "Containers are running"
+
+        docker-compose ps
+        
+        docker-compose logs flask-lightweight-token-service_app_1 
+        docker-compose logs flask-lightweight-token-service_postgres_db_1
+        docker-compose logs flask-lightweight-token-service_token_clearer-1
+    
+        if docker-compose ps | grep -q "flask-lightweight-token-service_postgres_db_1.*Up"; then
+          echo "flask-lightweight-token-service_postgres_db_1 is running"
         else
-          echo "Containers are not running"
+          echo "flask-lightweight-token-service_postgres_db_1 is not running"
+          exit 1
+        fi
+        
+        if docker-compose ps | grep -q "flask-lightweight-token-service_app_1.*Up"; then
+          echo "flask-lightweight-token-service_app_1 is running"
+        else
+          echo "flask-lightweight-token-service_app_1 is not running"
           exit 1
         fi
 
+        if docker-compose ps | grep -q "flask-lightweight-token-service_token_clearer-1.*Up"; then
+          echo "flask-lightweight-token-service_token_clearer-1 is running"
+        else
+          echo "flask-lightweight-token-service_token_clearer-1 is not running"
+          exit 1
+        fi
+
+
+
   test:
     runs-on: ubuntu-latest
-    needs: start_and_check_containers
+    needs: set_environment_variables_and_start_containers
 
     steps:
     - uses: actions/checkout@v2
