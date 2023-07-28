@@ -18,7 +18,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
-      - ${POSTGRESQL_DB_PORT}:${POSTGRESQL_DB_PORT}
+      - 5432:5432
 
   app:
     environment:
