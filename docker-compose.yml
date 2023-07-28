@@ -12,6 +12,7 @@ services:
       TOKEN_EXPIRATION_TIME: 60
       TOKEN_CLEAR_FREQUENCY: 60
       POSTGRESQL_SSL_MODE: require
+      POSTGRES_PASSWORD: 123456
 
     image: postgres:13
 
